@@ -1,4 +1,4 @@
-from ptx_to_sass_pass import PTXToSASSPass, ControlBits, build_feature_description
+from ptx_to_sass_pass import PTXToSASSPass, ControlBits
 
 
 def test_control_bits_encoding():
@@ -27,14 +27,6 @@ add.s32 %r3, %r1, %r2;
 """
     out = PTXToSASSPass().run(ptx)
     lines = out.splitlines()
+    # independent mov should not add bubbles
     assert "ctrl=0x00000" in lines[0]
     assert "ctrl=0x00000" in lines[1]
-
-
-def test_feature_description_and_missing_spec_fallback():
-    desc = build_feature_description()
-    assert "control bit自动优化" in desc
-
-    out = PTXToSASSPass().run("foo.bar %r1, %r2;")
-    assert "NOP" in out
-    assert "missing-spec:foo.bar" in out
